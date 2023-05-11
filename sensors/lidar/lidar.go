@@ -4,6 +4,7 @@ package lidar
 
 import (
 	"context"
+	"time"
 
 	"github.com/pkg/errors"
 	"go.viam.com/rdk/components/camera"
@@ -38,6 +39,21 @@ func New(deps resource.Dependencies, sensors []string, sensorIndex int) (Lidar, 
 }
 
 // GetData returns data from the lidar sensor.
-func (lidar Lidar) GetData(ctx context.Context) (pointcloud.PointCloud, error) {
-	return lidar.lidar.NextPointCloud(ctx)
+func (lidar Lidar) GetData(ctx context.Context) (pointcloud.PointCloud, time.Time, error) {
+	pcd, err := lidar.lidar.NextPointCloud(ctx)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
+
+	// If the camera provides timestamp information, extract the time. Otherwise, return the
+	// current time.
+	timeRec := time.Now()
+	if pcdSourceWithTimestamps, ok := lidar.lidar.(camera.PointCloudSourceWithTimestamps); ok {
+		_, timeRec, err = pcdSourceWithTimestamps.NextPointCloudTimestamps(ctx)
+		if err != nil {
+			return nil, time.Time{}, err
+		}
+	}
+
+	return pcd, timeRec, nil
 }

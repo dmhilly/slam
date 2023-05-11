@@ -122,7 +122,7 @@ func TestGetData(t *testing.T) {
 		test.That(t, testLidar, test.ShouldNotBeNil)
 		test.That(t, testLidar.Name, test.ShouldEqual, testLidarName)
 
-		pc, err := testLidar.GetData(context.Background())
+		pc, _, err := testLidar.GetData(context.Background())
 		test.That(t, pc, test.ShouldBeNil)
 		test.That(t, err, test.ShouldNotBeNil)
 		test.That(t, err.Error(), test.ShouldEqual, expectedErrorMessage)
@@ -146,7 +146,7 @@ func TestGetData(t *testing.T) {
 		test.That(t, testLidar, test.ShouldNotBeNil)
 		test.That(t, testLidar.Name, test.ShouldEqual, testLidarName)
 
-		pc, err := testLidar.GetData(context.Background())
+		pc, _, err := testLidar.GetData(context.Background())
 		test.That(t, pc, test.ShouldNotBeNil)
 		test.That(t, pc.Size(), test.ShouldEqual, 1)
 		test.That(t, err, test.ShouldBeNil)
